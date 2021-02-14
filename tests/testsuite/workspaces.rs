@@ -1049,6 +1049,35 @@ root: [..]
 }
 
 #[cargo_test]
+fn nested_workspace() {
+    let p = project()
+        .file(
+            "Cargo.toml",
+            r#"
+                [workspace]
+                members = ["l1"]
+            "#,
+        )
+        .file(
+            "l1/Cargo.toml",
+            r#"
+                [workspace]
+                members = ["l2"]
+            "#,
+        )
+        .file(
+            "l1/l2/Cargo.toml",
+            r#"
+                [project]
+                name = "l2"
+            "#,
+        )
+        .build();
+
+    p.cargo("build").run();
+}
+
+#[cargo_test]
 fn new_warning_with_corrupt_ws() {
     let p = project().file("Cargo.toml", "asdf").build();
     p.cargo("new bar")
